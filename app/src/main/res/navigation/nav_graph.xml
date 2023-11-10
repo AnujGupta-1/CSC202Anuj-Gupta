@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/plantListFragment">
+    app:startDestination="@id/plantListFragment"
+    tools:listitem="@layout/list_item_plant" >
 
     <fragment
         android:id="@+id/plantListFragment"
@@ -19,7 +20,6 @@
         android:name="com.example.task_3_greenspot_anuj_gupta_1.PlantDetailFragment"
         android:label="PlantDetailFragment"
         tools:layout="@layout/fragment_plant_detail">
-
         <argument
             android:name="plantId"
             app:argType="java.util.UUID" />

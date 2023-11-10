@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.task_3_greenspot_anuj_gupta_1.databinding.FragmentPlantDetailBinding
 import kotlinx.coroutines.launch
@@ -55,10 +56,7 @@ class PlantDetailFragment : Fragment() {
                     oldPlant.copy(title = text.toString())
                 }
             }
-            recordDate.apply {
 
-                isEnabled = false
-            }
             recordSolved.setOnCheckedChangeListener { _, isChecked ->
                 plantDetailViewModel.updatePlant { oldPlant ->
                     oldPlant.copy(isSolved = isChecked)
@@ -86,6 +84,11 @@ class PlantDetailFragment : Fragment() {
                 recordTitle.setText(plants.title)
             }
             recordDate.text = plants.date.toString()
+            recordDate.setOnClickListener {
+                findNavController().navigate(
+                    PlantDetailFragmentDirections.selectDate()
+                )
+            }
             recordSolved.isChecked = plants.isSolved
         }
     }

@@ -23,7 +23,14 @@
         <argument
             android:name="plantId"
             app:argType="java.util.UUID" />
+        <action
+            android:id="@+id/select_date"
+            app:destination="@id/datePickerFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/datePickerFragment"
+        android:name="com.example.task_3_greenspot_anuj_gupta_1.DatePickerFragment"
+        android:label="DatePickerFragment" />
 
 
 </navigation>

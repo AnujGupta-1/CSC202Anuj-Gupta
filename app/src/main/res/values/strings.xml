@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">CSC202 Assignment</string>
+    <string name="title_hint">Enter a Title</string>
+    <string name="place_hint">Enter Place</string>
+    <string name="title_label">Title</string>
+    <string name="place_label">Place</string>
+    <string name="details">Details</string>
+    <string name="problem_solved">Solved</string>
+</resources>

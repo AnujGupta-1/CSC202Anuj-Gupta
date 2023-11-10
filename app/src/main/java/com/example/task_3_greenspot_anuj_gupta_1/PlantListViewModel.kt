@@ -21,5 +21,9 @@ class PlantListViewModel : ViewModel() {
                 _plants.value = it
             }
         }
+
+    }
+    suspend fun addRecord(plants: Plants) {
+        plantRepository.addRecord(plants)
     }
 }

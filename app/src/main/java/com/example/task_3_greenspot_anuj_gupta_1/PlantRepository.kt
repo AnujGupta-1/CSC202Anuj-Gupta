@@ -2,11 +2,14 @@ package com.example.task_3_greenspot_anuj_gupta_1
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.task_3_greenspot_anuj_gupta_1.database.PlantDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.util.Date
 import java.util.UUID
 
 private const val DATABASE_NAME = "plant-database"
@@ -19,8 +22,9 @@ class PlantRepository private constructor(context: Context,private val coroutine
             PlantDatabase::class.java,
             DATABASE_NAME
         )
-
         .build()
+
+
 
     fun getPlants(): Flow<List<Plants>> = database.plantDao().getPlants()
 
@@ -31,6 +35,9 @@ class PlantRepository private constructor(context: Context,private val coroutine
              database.plantDao().updatePlant(plants)
          }
      }
+    suspend fun addRecord(plants: Plants) {
+        database.plantDao().addRecord(plants)
+    }
 
 
     companion object {

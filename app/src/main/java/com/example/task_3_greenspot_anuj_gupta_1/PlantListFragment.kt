@@ -2,6 +2,9 @@ package com.example.task_3_greenspot_anuj_gupta_1
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -14,7 +17,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.task_3_greenspot_anuj_gupta_1.databinding.FragmentPlantListBinding
 import kotlinx.coroutines.launch
-
+import java.util.Date
+import java.util.UUID
 
 
 class PlantListFragment : Fragment() {
@@ -26,6 +30,10 @@ class PlantListFragment : Fragment() {
         }
 
     private val plantListViewModel: PlantListViewModel by viewModels()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,5 +67,32 @@ class PlantListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_plant_list, menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.new_record -> {
+                showNewRecord()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+    private fun showNewRecord() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val newRecord = Plants(
+                id = UUID.randomUUID(),
+                title = "",
+                place = "",
+                date = Date(),
+                isSolved = false)
+            plantListViewModel.addRecord(newRecord)
+            findNavController().navigate(
+                PlantListFragmentDirections.showPlantDetail(newRecord.id)
+            )
+        }
     }
 }

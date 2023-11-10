@@ -54,7 +54,7 @@ class PlantDetailFragment : Fragment() {
             }
             placeTitle.doOnTextChanged { text, _, _, _ ->
                 plantDetailViewModel.updatePlant { oldPlant ->
-                    oldPlant.copy(title = text.toString())
+                    oldPlant.copy(place = text.toString())
                 }
             }
 
@@ -66,8 +66,10 @@ class PlantDetailFragment : Fragment() {
             }
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    plantDetailViewModel.plant.collect { plant ->
-                        plants?.let { updateUi(it) }
+                    plantDetailViewModel.plant.collect { plants ->
+
+                        plants?.let {
+                            updateUi(plants) }
                     }
                 }
             }

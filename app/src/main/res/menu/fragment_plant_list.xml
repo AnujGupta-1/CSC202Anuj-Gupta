@@ -6,4 +6,10 @@
         android:icon="@drawable/ic_menu_add"
         android:title="@string/new_record"
         app:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/help"
+        android:icon="@drawable/ic_menu_help"
+        android:title="@string/help"
+        app:showAsAction="ifRoom|withText"/>
+
 </menu>

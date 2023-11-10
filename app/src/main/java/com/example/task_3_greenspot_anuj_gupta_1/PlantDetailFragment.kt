@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -70,6 +71,13 @@ class PlantDetailFragment : Fragment() {
                     }
                 }
             }
+            setFragmentResultListener(
+                DatePickerFragment.REQUEST_KEY_DATE
+            ) { _, bundle ->
+                val newDate =
+                    bundle.getSerializable(DatePickerFragment.BUNDLE_KEY_DATE) as Date
+                plantDetailViewModel.updatePlant { it.copy(date = newDate) }
+            }
 
         }
     }
@@ -86,10 +94,11 @@ class PlantDetailFragment : Fragment() {
             recordDate.text = plants.date.toString()
             recordDate.setOnClickListener {
                 findNavController().navigate(
-                    PlantDetailFragmentDirections.selectDate()
+                    PlantDetailFragmentDirections.selectDate(plants.date)
                 )
             }
             recordSolved.isChecked = plants.isSolved
         }
     }
+
 }

@@ -6,6 +6,7 @@ plugins {
     id ("org.jetbrains.kotlin.kapt")
     id ("androidx.navigation.safeargs")
 
+
 }
 
 

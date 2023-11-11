@@ -1,6 +1,7 @@
 package com.example.task_3_greenspot_anuj_gupta_1.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -16,6 +17,9 @@ interface PlantDao {
     @Query("SELECT * FROM plants WHERE id=(:id)" )
     suspend fun getPlants(id: UUID): Plants
 
+    @Query("DELETE FROM plants WHERE id = (:id)")
+    suspend fun deletePlant(id: UUID)
+
     @Insert
     suspend fun insertAll(plants: List<Plants>)
 
@@ -24,4 +28,5 @@ interface PlantDao {
 
     @Update
     suspend fun updatePlant(plants: Plants)
+
 }

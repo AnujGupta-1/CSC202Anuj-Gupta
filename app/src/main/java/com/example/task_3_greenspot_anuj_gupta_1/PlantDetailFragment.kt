@@ -1,17 +1,28 @@
 package com.example.task_3_greenspot_anuj_gupta_1
 
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnLayout
 import androidx.core.widget.doOnTextChanged
@@ -26,6 +37,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.task_3_greenspot_anuj_gupta_1.databinding.FragmentPlantDetailBinding
 import kotlinx.coroutines.launch
 import java.io.File
+import java.net.URI
 import java.util.Date
 import java.util.UUID
 
@@ -56,7 +68,10 @@ class PlantDetailFragment : Fragment() {
         get() = checkNotNull(_binding){
             "cannot access binding, it is null. is view visible?"
         }
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,6 +85,7 @@ class PlantDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("PlantDetailFragment", "plantId: ${args.plantId}")
         binding.apply {
             recordTitle.doOnTextChanged { text, _, _, _ ->
                 plantDetailViewModel.updatePlant { oldPlant ->
@@ -104,6 +120,13 @@ class PlantDetailFragment : Fragment() {
                     bundle.getSerializable(DatePickerFragment.BUNDLE_KEY_DATE) as Date
                 plantDetailViewModel.updatePlant { it.copy(date = newDate) }
             }
+            binding.deleteButton.setOnClickListener {
+                showDeleteConfirmationDialog()
+            }
+            val isNewRecord = args.plantId == null
+            Log.d("PlantDetailFragment", "Is new record: $isNewRecord")
+            binding.deleteButton.visibility = if (isNewRecord) View.GONE else View.VISIBLE
+
 //            plantCamera.setOnClickListener {
 //                photoName = "IMG_${Date()}.JPG"
 //                val photoFile = File(requireContext().applicationContext.filesDir,
@@ -138,6 +161,17 @@ class PlantDetailFragment : Fragment() {
                     }
                 }
             }
+            binding.newLocationButton.setOnClickListener {
+                getCurrentLocation()
+            }
+
+            binding.showMap.setOnClickListener {
+                if (hasLocationPermission()) {
+                    showMapIfLocationAvailable()
+                } else {
+                    requestLocationPermission()
+                }
+            }
 
             mImageView.viewTreeObserver.addOnGlobalLayoutListener(object :
                     ViewTreeObserver.OnGlobalLayoutListener {
@@ -153,6 +187,63 @@ class PlantDetailFragment : Fragment() {
 
     }
 
+    private fun showDeleteConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Confirm Deletion")
+            .setMessage("Are you sure you want to delete this record?")
+            .setPositiveButton("Delete") { _, _ ->
+                plantDetailViewModel.deletePlant()
+                findNavController().navigateUp()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+
+    private fun hasLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            "android.permission.ACCESS_FINE_LOCATION"
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestLocationPermission() {
+        requestPermissions(
+            arrayOf("android.permission.ACCESS_FINE_LOCATION"),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    showMapIfLocationAvailable()
+                } else {
+                    // Handle the case where the user denies the permission.
+                }
+                return
+            }
+            else -> {
+                // Ignore all other requests.
+            }
+        }
+    }
+
+    private fun showMapIfLocationAvailable() {
+        this.plants?.location?.let { location ->
+            val gmmIntentUri = Uri.parse("geo:${location.latitude},${location.longitude}")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            if (mapIntent.resolveActivity(requireActivity().packageManager) != null) {
+                startActivity(mapIntent)
+            }
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding= null
@@ -244,8 +335,36 @@ class PlantDetailFragment : Fragment() {
             }
         }
     }
+    private fun getCurrentLocation() {
+        val locationManager =
+            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                val latitude = location.latitude
+                val longitude = location.longitude
+
+                plantDetailViewModel.updateLocation(latitude, longitude)
+            }
+
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
+
+        try {
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                0,
+                0f,
+                locationListener
+            )
+        } catch (e: SecurityException) {
+            // Handle the exception
+        }
+    }
 companion object{
     const val PHOTO_DIALOG = "PhotoDialog"
+    const val LOCATION_PERMISSION_REQUEST_CODE = 1
 }
 
 }

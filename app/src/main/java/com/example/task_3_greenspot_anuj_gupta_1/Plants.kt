@@ -12,6 +12,12 @@ data class Plants(
     val place: String,
     val date: Date,
     val isSolved: Boolean,
-    val location: String,
-    val photoFileName: String? = null
+    val location: Location?,
+    val photoFileName: String? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null
+)
+data class Location(
+    val latitude: Double,
+    val longitude: Double
 )

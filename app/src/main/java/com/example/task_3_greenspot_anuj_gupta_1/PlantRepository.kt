@@ -7,10 +7,14 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.task_3_greenspot_anuj_gupta_1.database.PlantDatabase
 import com.example.task_3_greenspot_anuj_gupta_1.database.migration_1_2
 import com.example.task_3_greenspot_anuj_gupta_1.database.migration_2_3
+import com.example.task_3_greenspot_anuj_gupta_1.database.migration_3_4
+import com.example.task_3_greenspot_anuj_gupta_1.database.migration_4_5
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.UUID
 
@@ -24,7 +28,7 @@ class PlantRepository private constructor(context: Context,private val coroutine
             PlantDatabase::class.java,
             DATABASE_NAME
         )
-        .addMigrations(migration_1_2,migration_2_3)
+        .addMigrations(migration_1_2,migration_2_3, migration_3_4, migration_4_5)
         .build()
 
 
@@ -40,6 +44,12 @@ class PlantRepository private constructor(context: Context,private val coroutine
      }
     suspend fun addRecord(plants: Plants) {
         database.plantDao().addRecord(plants)
+    }
+    suspend fun deletePlant(plantId: UUID) {
+        withContext(Dispatchers.IO) {
+            // Replace with your actual database deletion code
+            database.plantDao().deletePlant(plantId)
+        }
     }
 
 

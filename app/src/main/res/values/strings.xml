@@ -7,6 +7,8 @@
     <string name="details">Details</string>
     <string name="geo_location_label">Geo Loaction</string>
     <string name="btn_share">Share</string>
+    <string name="delete_button">Delete</string>
+    <string name="delete_record">Delete Record</string>
     <string name="problem_solved">Solved</string>
     <string name="new_record">New Record</string>
     <string name="help">Help</string>
@@ -17,4 +19,9 @@
     <string name="report_unsolved">The case is not solved</string>
     <string name="report_subject">Greenspot Report</string>
     <string name="send_report">Send report via</string>
-</resources>
+    <string name="delete_confirmation_title">Delete</string>
+    <string name="delete_confirmation_message">Are you sure to delete?</string>
+    <string name="delete">Delete</string>
+    <string name="record_deleted">Record Deleted</string>
+    <string name="cancel">Cancel</string>
+ </resources>

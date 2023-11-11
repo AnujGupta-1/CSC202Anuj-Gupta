@@ -1,5 +1,6 @@
 package com.example.task_3_greenspot_anuj_gupta_1
 
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -57,11 +58,12 @@ class PlantListFragment : Fragment() {
                         PlantListAdapter(plants){plantId ->
                             findNavController().navigate(
                         PlantListFragmentDirections.showPlantDetail(plantId)
-                    )
+                            )
                 }
                 }
             }
         }
+
     }
 
     override fun onDestroyView() {
@@ -83,13 +85,15 @@ class PlantListFragment : Fragment() {
     }
     private fun showNewRecord() {
         viewLifecycleOwner.lifecycleScope.launch {
+            val newLocation = Location("")
             val newRecord = Plants(
                 id = UUID.randomUUID(),
                 title = "",
                 place = "",
                 date = Date(),
                 isSolved = false,
-                location="")
+                location= newLocation
+            )
             plantListViewModel.addRecord(newRecord)
             findNavController().navigate(
                 PlantListFragmentDirections.showPlantDetail(newRecord.id)

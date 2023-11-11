@@ -9,6 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnLayout
@@ -33,6 +35,8 @@ private const val DATE_FORMAT = "EEE, MMM, dd"
 class PlantDetailFragment : Fragment() {
     private var photoName: String? = null
     private lateinit var plants: Plants
+    private lateinit var mImageView: ImageView
+    private var mPhotoFile: File? = null
 
     private val takePhoto = registerForActivityResult(
         ActivityResultContracts.TakePicture()
@@ -126,8 +130,27 @@ class PlantDetailFragment : Fragment() {
                     Log.e("PlantDetailFragment", "Cannot launch camera, URI is null")
                 }
             }
+                mImageView = view.findViewById(R.id.plant_photo)
+            mImageView.setOnClickListener {
+                mPhotoFile?.let {
+                    if (it.exists()) {
+                        ImageZoomFragment.newInstance(it).show(childFragmentManager, PHOTO_DIALOG)
+                    }
+                }
+            }
 
-        }
+            mImageView.viewTreeObserver.addOnGlobalLayoutListener(object :
+                    ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        updateImageView(mImageView.width, mImageView.height)
+                        mImageView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    }
+                })
+
+
+            }
+
+
     }
 
     override fun onDestroyView() {
@@ -164,6 +187,17 @@ class PlantDetailFragment : Fragment() {
             updatePhoto(plants.photoFileName)
         }
     }
+    private fun updateImageView(width: Int, height: Int) {
+        mPhotoFile?.let {
+            if (it.exists()) {
+                val bitmap = PictureUtils.getScaledBitmap(it.path, width, height)
+                mImageView.setImageBitmap(bitmap)
+
+            } else {
+                mImageView.setImageDrawable(null)
+            }
+        }
+    }
     private fun getReport(plants: Plants): String {
         val solvedString = if (plants.isSolved) {
             getString(R.string.report_solved)
@@ -196,7 +230,7 @@ class PlantDetailFragment : Fragment() {
             }
             if (photoFile?.exists() == true) {
                 binding.plantPhoto.doOnLayout { measuredView ->
-                    val scaledBitmap = getScaledBitmap(
+                    val scaledBitmap = PictureUtils.getScaledBitmap(
                         photoFile.path,
                         measuredView.width,
                         measuredView.height
@@ -210,6 +244,8 @@ class PlantDetailFragment : Fragment() {
             }
         }
     }
-
+companion object{
+    const val PHOTO_DIALOG = "PhotoDialog"
+}
 
 }

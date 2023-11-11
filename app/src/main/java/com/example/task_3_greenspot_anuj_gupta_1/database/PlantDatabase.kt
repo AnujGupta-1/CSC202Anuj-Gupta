@@ -7,7 +7,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.task_3_greenspot_anuj_gupta_1.Plants
 
-@Database(entities = [ Plants::class ], version=3, exportSchema = false)
+@Database(entities = [ Plants::class ], version=5, exportSchema = false)
 @TypeConverters(PlantTypeConverters::class)
 
 abstract class PlantDatabase : RoomDatabase() {
@@ -27,5 +27,20 @@ val migration_2_3 = object : Migration(2, 3) {
         database.execSQL(
             "ALTER TABLE Plants ADD COLUMN photoFileName TEXT"
         )
+    }
+}
+
+val migration_3_4 = object:Migration(3,4){
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            "ALTER TABLE Plants ADD COLUMN latitude REAL"
+
+        )
+    }
+}
+
+val migration_4_5= object:Migration(4,5) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE Plants ADD COLUMN longitude REAL")
     }
 }

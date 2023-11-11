@@ -102,7 +102,7 @@
 
 
     <Button
-        android:id="@+id/get_gps"
+        android:id="@+id/new_location_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -115,7 +115,7 @@
 
 
     <Button
-        android:id="@+id/show_gps"
+        android:id="@+id/show_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -124,7 +124,7 @@
         android:minHeight="48dp"
         android:text="Show Map"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/get_gps"
+        app:layout_constraintLeft_toRightOf="@+id/new_location_button"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
     <TextView
         android:id="@+id/textView3"
@@ -137,7 +137,7 @@
         android:textAppearance="?attr/textAppearanceHeadline6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/get_gps" />
+        app:layout_constraintTop_toBottomOf="@+id/new_location_button" />
 
 
     <Button
@@ -173,4 +173,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/plant_report" />
 
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/delete"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/record_solved" />
 </androidx.constraintlayout.widget.ConstraintLayout>

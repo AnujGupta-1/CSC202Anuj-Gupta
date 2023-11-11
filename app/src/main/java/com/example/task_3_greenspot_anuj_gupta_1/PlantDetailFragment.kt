@@ -1,10 +1,17 @@
 package com.example.task_3_greenspot_anuj_gupta_1
 
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import androidx.core.view.doOnLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -16,13 +23,26 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.task_3_greenspot_anuj_gupta_1.databinding.FragmentPlantDetailBinding
 import kotlinx.coroutines.launch
+import java.io.File
 import java.util.Date
 import java.util.UUID
 
 
+private const val DATE_FORMAT = "EEE, MMM, dd"
 
 class PlantDetailFragment : Fragment() {
+    private var photoName: String? = null
     private lateinit var plants: Plants
+
+    private val takePhoto = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { didTakePhoto: Boolean ->
+        if (didTakePhoto && photoName != null) {
+            plantDetailViewModel.updatePlant { oldPlants ->
+                oldPlants.copy(photoFileName = photoName)
+            }
+        }
+    }
     private val args: PlantDetailFragmentArgs by navArgs()
     private val plantDetailViewModel: PlantDetailViewModel by viewModels {
         PlantDetailViewModelFactory(args.plantId)
@@ -80,6 +100,32 @@ class PlantDetailFragment : Fragment() {
                     bundle.getSerializable(DatePickerFragment.BUNDLE_KEY_DATE) as Date
                 plantDetailViewModel.updatePlant { it.copy(date = newDate) }
             }
+//            plantCamera.setOnClickListener {
+//                photoName = "IMG_${Date()}.JPG"
+//                val photoFile = File(requireContext().applicationContext.filesDir,
+//                    photoName)
+//                val photoUri = FileProvider.getUriForFile(
+//                    requireContext(),
+//                    "com.example.task_3_greenspot_anuj_gupta_1.fileProvider",
+//                    photoFile
+//                )
+//                takePhoto.launch(photoUri)
+//            }
+            plantCamera.setOnClickListener {
+                photoName = "IMG_${DateFormat.format("yyyyMMdd_HHmmss", Date())}.jpg"
+                val photoFile = File(requireContext().applicationContext.filesDir, photoName!!)
+                val photoUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    "com.example.task_3_greenspot_anuj_gupta_1.fileProvider",
+                    photoFile
+                )
+
+                if (photoUri != null) {
+                    takePhoto.launch(photoUri)
+                } else {
+                    Log.e("PlantDetailFragment", "Cannot launch camera, URI is null")
+                }
+            }
 
         }
     }
@@ -100,7 +146,70 @@ class PlantDetailFragment : Fragment() {
                 )
             }
             recordSolved.isChecked = plants.isSolved
+            plantReport.setOnClickListener {
+                val reportIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, getReport(plants))
+                    putExtra(
+                        Intent.EXTRA_SUBJECT,
+                        getString(R.string.report_subject)
+                    )
+                }
+                val chooserIntent = Intent.createChooser(
+                    reportIntent,
+                    getString(R.string.send_report)
+                )
+                startActivity(chooserIntent)
+            }
+            updatePhoto(plants.photoFileName)
         }
     }
+    private fun getReport(plants: Plants): String {
+        val solvedString = if (plants.isSolved) {
+            getString(R.string.report_solved)
+        } else {
+            getString(R.string.report_unsolved)
+        }
+        val dateString = DateFormat.format(DATE_FORMAT, plants.date).toString()
+        val place = plants.place
+
+        return getString(
+            R.string.plant_report,
+            plants.title, dateString, solvedString, place
+        )
+
+
+    }
+    private fun canResolveIntent(intent: Intent): Boolean {
+        val packageManager: PackageManager = requireActivity().packageManager
+        val resolvedActivity: ResolveInfo? =
+            packageManager.resolveActivity(
+                intent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            )
+        return resolvedActivity != null
+    }
+    private fun updatePhoto(photoFileName: String?) {
+        if (binding.plantPhoto.tag != photoFileName) {
+            val photoFile = photoFileName?.let {
+                File(requireContext().applicationContext.filesDir, it)
+            }
+            if (photoFile?.exists() == true) {
+                binding.plantPhoto.doOnLayout { measuredView ->
+                    val scaledBitmap = getScaledBitmap(
+                        photoFile.path,
+                        measuredView.width,
+                        measuredView.height
+                    )
+                    binding.plantPhoto.setImageBitmap(scaledBitmap)
+                    binding.plantPhoto.tag = photoFileName
+                }
+            } else {
+                binding.plantPhoto.setImageBitmap(null)
+                binding.plantPhoto.tag = null
+            }
+        }
+    }
+
 
 }

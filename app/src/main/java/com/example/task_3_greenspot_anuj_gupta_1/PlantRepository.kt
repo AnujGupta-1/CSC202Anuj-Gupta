@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.task_3_greenspot_anuj_gupta_1.database.PlantDatabase
+import com.example.task_3_greenspot_anuj_gupta_1.database.migration_1_2
+import com.example.task_3_greenspot_anuj_gupta_1.database.migration_2_3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +24,7 @@ class PlantRepository private constructor(context: Context,private val coroutine
             PlantDatabase::class.java,
             DATABASE_NAME
         )
+        .addMigrations(migration_1_2,migration_2_3)
         .build()
 
 

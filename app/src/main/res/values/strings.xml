@@ -5,7 +5,16 @@
     <string name="title_label">Title</string>
     <string name="place_label">Place</string>
     <string name="details">Details</string>
+    <string name="geo_location_label">Geo Loaction</string>
+    <string name="btn_share">Share</string>
     <string name="problem_solved">Solved</string>
     <string name="new_record">New Record</string>
     <string name="help">Help</string>
+    <string name="plant_report">%1$s!
+ The report was discovered on %2$s. %3$s, %4$s
+ </string>
+    <string name="report_solved">The case is solved</string>
+    <string name="report_unsolved">The case is not solved</string>
+    <string name="report_subject">Greenspot Report</string>
+    <string name="send_report">Send report via</string>
 </resources>

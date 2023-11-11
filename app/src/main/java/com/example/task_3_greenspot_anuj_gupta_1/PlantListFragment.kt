@@ -88,7 +88,8 @@ class PlantListFragment : Fragment() {
                 title = "",
                 place = "",
                 date = Date(),
-                isSolved = false)
+                isSolved = false,
+                location="")
             plantListViewModel.addRecord(newRecord)
             findNavController().navigate(
                 PlantListFragmentDirections.showPlantDetail(newRecord.id)
